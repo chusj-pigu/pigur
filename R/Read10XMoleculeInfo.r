@@ -86,16 +86,16 @@ Read10XMoleculeInfo <- function(moleculeFile="molecule_info.h5",
     }
     colnames(countExons) <- colnames(countIntrons) <- barcodesNames
     rownames(countExons) <- rownames(countIntrons) <- name[featuresToKeep]
-    cells.meta.data <- data.frame(nCount_EXONS =colSums(countExons),
-                                  nCount_INTRONS = colSums(countIntrons))
+    cells.meta.data <- data.frame(nCount_EXONS =Matrix::colSums(countExons),
+                                  nCount_INTRONS = Matrix::colSums(countIntrons))
     cells.meta.data$pct_INTRONS = 100*cells.meta.data$nCount_INTRONS / pmax(1,cells.meta.data$nCount_INTRONS + cells.meta.data$nCount_EXONS)
 
     features.meta.data <- data.frame(feature_id = featureId[featuresToKeep],
                                   feature_name = featureName[featuresToKeep],
                                   genome = rhdf5::h5read(moleculeFile,"features/genome")[featuresToKeep],
                                   feature_type = featureTypes[featuresToKeep],
-                                  nCount_EXONS =rowSums(countExons),
-                                  nCount_INTRONS = rowSums(countIntrons))
+                                  nCount_EXONS =Matrix::rowSums(countExons),
+                                  nCount_INTRONS = Matrix::rowSums(countIntrons))
     features.meta.data$pct_INTRONS = 100*features.meta.data$nCount_INTRONS / pmax(1,features.meta.data$nCount_INTRONS + features.meta.data$nCount_EXONS)
 
     return (list('EXONS'=countExons,
