@@ -13,6 +13,10 @@ RoxygenNote: 7.3.1
 Imports:
     Matrix,
     rhdf5,
-    fgsea
-Suggests:
-    Seurat
+    fgsea,
+    Seurat,
+    future,
+    BiocParallel,
+    AUCell,
+    Matrix,
+    qvalue

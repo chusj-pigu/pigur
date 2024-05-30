@@ -1,4 +1,11 @@
 require(fgsea)
+require(Seurat)
+require(future)
+require(BiocParallel)
+require(AUCell)
+require(Matrix)
+require(qvalue)
+
 
 #' Load Genesets files in GMT format from a folder
 #'
@@ -167,4 +174,134 @@ RunFGSEAMultilevelBatch<- function(genesetLists,
     results$leadingEdge <- vapply(results$leadingEdge, paste, collapse = ";", character(1L))
 
     return(results)
+}
+
+
+#' Split data matrix into smaller sub-matrices ('chunks')
+#' Note : Code copied from https://rdrr.io/github/carmonalab/UCell/man/split_data.matrix.html
+#' 
+#'
+#' @param   matrix      Input data matrix 
+#' @param   chunk.size  How many cells to include in each sub-matrix
+#' 
+#' @return  A list of sub-matrices, each with size {n_features x chunk_size}
+split_data.matrix <- function(matrix, chunk.size=100) {
+    ncols <- dim(matrix)[2]
+    nchunks <- (ncols-1) %/% chunk.size + 1
+    
+    split.data <- list()
+    min <- 1
+    for (i in seq_len(nchunks)) {
+        if (i == nchunks-1) {  #make last two chunks of equal size
+            left <- ncols-(i-1)*chunk.size
+            max <- min+round(left/2)-1
+        } else {
+            max <- min(i*chunk.size, ncols)
+        }
+        split.data[[i]] <- matrix[,min:max,drop=FALSE]
+        min <- max+1    #for next chunk
+    }
+    return(split.data)
+}
+
+#' Run AUCell Pathway Activity scoring and threshold the results based on a null distribution obtained from a permuted gene matrix.
+#'
+#' @param dataMat A sparse scRNAseq gene expression matrix  (genes * cells)
+#' @param genesets A list of genesets to compute the activity score
+#' @param p_val_thr Pvalue threshold to use to threshold the results.  Pathway activity score values less significant than this p-value will be set to 0.
+#' @param minSize Only use genesets having at least that many detected genes in the dataMatrix
+#' @param ncores Use that number of cores when running AUCell
+#' @param ... Additional arguments passed on to UCell::AUCell_run
+#' @returns A sparse pathway activity matrix (pathway * cells), which has been thresholded so that non significant scores are 0.
+#' @examples
+#'\dontrun{
+#' genesets = CollapseGenesetList(LoadGeneSetsGMTs("../genesets"))
+#' geneExpMat = as(GetAssayData(object = seurat_object, assay = 'RNA', layer = "data"),"dgCMatrix")
+#' pasMat = ComputeAUCellPathwayActivity(geneExpMat,genesets,cores=5)
+#' seurat_object[['PAS']] <- CreateAssayObject(data = pasMat)
+#' }
+#' @export
+ComputeAUCellPathwayActivity <- function(dataMat,
+                              genesets,
+                              p_val_thr = 0.05,
+                              minSize = 10,                               
+                              ncores = 1,
+                              ...)
+{
+
+
+    detectedGeneCounts <- Matrix::rowSums(as(dataMat,"dgCMatrix") > 0)
+    detectedGeneCounts <- detectedGeneCounts[detectedGeneCounts >0]
+    detectedGeneCounts <- sapply(genesets,FUN=function(x){sum(x %in% names(detectedGeneCounts))})
+    #Filter genesets that have too few detected genes in our dataset
+    genesets <- genesets[detectedGeneCounts > minSize]
+    
+    
+    
+    #Adjust the thrshold if we do not have enough cells.
+    if (p_val_thr <= 1/NCOL(dataMat))
+    {
+        p_val_thr = 1/NCOL(dataMat)
+    }
+    
+    split.data <- split_data.matrix(matrix=dataMat, chunk.size=2000)
+    
+
+    #work in chunks of data, so that the dense matrix created by the apply is not too large.
+    shuffledMat <- NULL
+    for(i in split.data)
+    {
+         #Shuffle the gene expression independently for each cell
+        mat <- as(apply(i,MARGIN=2,FUN=sample),"dgCMatrix")
+        if(is.null(shuffledMat))
+        {
+            shuffledMat <- mat
+        } else {
+            shuffledMat <- cbind(shuffledMat,mat)
+        }
+    }
+
+    #Put back the row names
+    rownames(shuffledMat) <- rownames(seurat_object[[assay_name]])
+
+    # Run AUCells on both the shuffled matrix, and the normal matrix
+    shuffledMat_AUC <- AUCell::AUCell_run(shuffledMat,
+                        genesets, BPPARAM = MulticoreParam(ncores), ...)
+    AUC <- AUCell::AUCell_run(dataMat,
+                        genesets, BPPARAM = MulticoreParam(ncores), ...)
+
+    
+    split.data <- split(rownames(AUC@assays@data$AUC),2000)
+    res <- NULL
+    
+    #Apply Threshold in batches, because a dense matrix is created at each batch
+
+    for(i in split.data)
+    {
+        mat <- as(t(sapply(i,
+                           FUN=function(x){
+                               #Compute empirical p-values based on the 
+                               pvals <- qvalue::empPvals(AUC@assays@data$AUC[x,],
+                                                         shuffledMat_AUC@assays@data$AUC[x,], 
+                                                         pool = TRUE)
+                               pas <- AUC@assays@data$AUC[x,]
+                               qs <- quantile(shuffledMat_AUC@assays@data$AUC[x,],prob=c(1-p_val_thr))
+                               pas[pvals > p_val_thr] <- 0
+
+                               pas
+                               })),"dgCMatrix")
+
+        if(is.null(res))
+        {
+            res <- mat
+        } else {
+            res <- rbind(res,mat)
+        }
+    }    
+    
+    colnames(res) <- colnames(shuffledMat_AUC@assays@data$AUC)
+    rownames(res) <- rownames(shuffledMat_AUC@assays@data$AUC)
+
+    return(res)
+
 }
