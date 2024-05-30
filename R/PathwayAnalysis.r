@@ -1,10 +1,10 @@
 require(fgsea)
 require(Seurat)
 require(future)
-require(BiocParallel)
 require(AUCell)
 require(Matrix)
 require(qvalue)
+library(BiocParallel)
 
 
 #' Load Genesets files in GMT format from a folder
@@ -217,7 +217,7 @@ split_data.matrix <- function(matrix, chunk.size=100) {
 #'\dontrun{
 #' genesets = CollapseGenesetList(LoadGeneSetsGMTs("../genesets"))
 #' geneExpMat = as(GetAssayData(object = seurat_object, assay = 'RNA', layer = "data"),"dgCMatrix")
-#' pasMat = ComputeAUCellPathwayActivity(geneExpMat,genesets,cores=5)
+#' pasMat = ComputeAUCellPathwayActivity(geneExpMat,genesets,ncores=5)
 #' seurat_object[['PAS']] <- CreateAssayObject(data = pasMat)
 #' }
 #' @export
