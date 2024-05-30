@@ -30,6 +30,32 @@ LoadGeneSetsGMTs <- function(folder = ".")
 
 }
 
+#' Collapse a list of list of genesets into a single level list
+#'
+#' @param genesetsLists List of list of genesets, as returned by LoadGeneSetsGMTs
+#' @param usePrefix If TRUE, the top level list named a prefixed to the collapsed list names.  Default to FALSE to preserve the original geneset names.
+#' @returns A single-level list genesets, ready to be used for pathway activity scoring.
+#' @examples
+#'\dontrun{
+#' genesetsLists = LoadGeneSetsGMTs("../genesets")
+#' genesets <- CollapseGenesetList(genesetsLists)
+#' genesets[[1]]
+#' }
+#' @export
+CollapseGenesetList <- function(genesetsLists,usePrefix=FALSE)
+{
+    collapsed_gs <-  unlist(genesetsLists, recursive=FALSE,use.names = TRUE)
+    if(!usePrefix)
+    {
+        for(g in names(genesetsLists))
+        {
+            names(collapsed_gs) <- gsub(paste0('^',g,'.'),'',names(collapsed_gs))
+        }
+    }
+    return(collapsed_gs)
+
+}
+
 #' Create a Ranking of Genes from DE results.  The ranking is a based on a multiplication of the log2FC and the -log10(pvalue)
 #'
 #' @param deResultDF Data Frame containing the Differential expression results
