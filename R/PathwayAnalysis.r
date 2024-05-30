@@ -113,7 +113,7 @@ CreateRanking <- function(deResultDF,
         groups = unique(deResultDF[,groupByColumn])
         for(g in groups)
         {
-            results[[g]] <- CreateRankingInternal(deResultDF[deResultDF$groupByColumn == g,])
+            results[[g]] <- CreateRankingInternal(deResultDF[deResultDF[,groupByColumn]== g,])
         }
     }
     return(results)
