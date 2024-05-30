@@ -1,7 +1,7 @@
 Package: pigur
 Type: Package
 Title: Fonctions utilitaires de la (PIGU) 
-Version: 0.1.0
+Version: 0.2.0
 Author: Olivier Gingras
 Maintainer: Olivier Gingras <olivier.gingras.hsj@ssss.gouv.qc.ca>
 Description: Fonctions utilitaires de la plateforme integree de 
@@ -12,6 +12,7 @@ LazyData: true
 RoxygenNote: 7.3.1
 Imports:
     Matrix,
-    rhdf5
+    rhdf5,
+    fgsea
 Suggests:
     Seurat
