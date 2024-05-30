@@ -262,7 +262,7 @@ ComputeAUCellPathwayActivity <- function(dataMat,
     }
 
     #Put back the row names
-    rownames(shuffledMat) <- rownames(seurat_object[[assay_name]])
+    rownames(shuffledMat) <- rownames(dataMat)
 
     # Run AUCells on both the shuffled matrix, and the normal matrix
     shuffledMat_AUC <- AUCell::AUCell_run(shuffledMat,
