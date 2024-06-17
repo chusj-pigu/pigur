@@ -18,6 +18,7 @@ Imports:
     Seurat,
     future,
     BiocParallel,
+    MAST,
     AUCell,
     Matrix,
     qvalue

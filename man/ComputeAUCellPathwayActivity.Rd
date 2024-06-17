@@ -36,7 +36,7 @@ Run AUCell Pathway Activity scoring and threshold the results based on a null di
 \dontrun{
 genesets = CollapseGenesetList(LoadGeneSetsGMTs("../genesets"))
 geneExpMat = as(GetAssayData(object = seurat_object, assay = 'RNA', layer = "data"),"dgCMatrix")
-pasMat = ComputeAUCellPathwayActivity(geneExpMat,genesets,cores=5)
+pasMat = ComputeAUCellPathwayActivity(geneExpMat,genesets,ncores=5)
 seurat_object[['PAS']] <- CreateAssayObject(data = pasMat)
 }
 }
