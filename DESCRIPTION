@@ -17,8 +17,9 @@ Imports:
     fgsea,
     Seurat,
     future,
+    openxlsx,
     BiocParallel,
-    MAST,
+    MAST,   
     AUCell,
     Matrix,
     qvalue
