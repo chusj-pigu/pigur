@@ -1,5 +1,5 @@
 library(openxlsx)
-library(seurat)
+library(Seurat)
 
 #' Export a list of tables to 1 excel file
 #'
@@ -58,7 +58,7 @@ ExportPseudoBulkAssay <- function(seurat_object,
                                   file,
                                   assay = "RNA",
                                   features = NULL,
-                                  group.by= "ident"
+                                  group.by= "ident",
                                   tableStyle = "TableStyleLight9")
 {
     wb <- createWorkbook()
