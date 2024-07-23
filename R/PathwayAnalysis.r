@@ -108,7 +108,7 @@ CreateRanking <- function(deResultDF,
     results = list()
     if(is.null(groupByColumn))
     {
-        results['All'] = CreateRankingInternal(deResultDF)
+        results[['All']] = CreateRankingInternal(deResultDF)
     } else {
         groups = unique(deResultDF[,groupByColumn])
         for(g in groups)
