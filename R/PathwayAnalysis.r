@@ -266,9 +266,9 @@ ComputeAUCellPathwayActivity <- function(dataMat,
 
     # Run AUCells on both the shuffled matrix, and the normal matrix
     shuffledMat_AUC <- AUCell::AUCell_run(shuffledMat,
-                        genesets, BPPARAM = MulticoreParam(ncores), ...)
+                        genesets, BPPARAM = BiocParallel::MulticoreParam(ncores), ...)
     AUC <- AUCell::AUCell_run(dataMat,
-                        genesets, BPPARAM = MulticoreParam(ncores), ...)
+                        genesets, BPPARAM = BiocParallel::MulticoreParam(ncores), ...)
 
     
     split.data <- split(rownames(AUC@assays@data$AUC),2000)
