@@ -30,7 +30,7 @@ find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOf
     print(dim(sca))
     print("")
     # add a column to the data which contains scaled number of genes that are expressed in each cell
-    cdr2 <- colSums(assay(sca)>0)
+    cdr2 <- Matrix::colSums(assay(sca)>0)
     colData(sca)[[libSizeVar]] <- scale(cdr2)
 
     # define and fit the model (if mixed or only fixed)
