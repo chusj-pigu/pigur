@@ -1,7 +1,7 @@
 Package: pigur
 Type: Package
 Title: Fonctions utilitaires de la (PIGU) 
-Version: 0.2.0
+Version: 0.3.0
 Author: Olivier Gingras
 Maintainer: Olivier Gingras <olivier.gingras.hsj@ssss.gouv.qc.ca>
 Description: Fonctions utilitaires de la plateforme integree de 

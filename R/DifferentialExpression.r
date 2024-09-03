@@ -31,7 +31,7 @@ find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOf
     # define and fit the model (if mixed or only fixed)
     if (mixed)
     {
-        zlmCond <- zlm(formula = as.formula(formulaToUse), 
+        zlmCond <- MAST::zlm(formula = as.formula(formulaToUse), 
                        sca=sca, 
                        method='glmer', 
                        ebayes=F, 
@@ -39,7 +39,7 @@ find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOf
                        fitArgsD=list(nAGQ = 0)) # to speed up calculations
     
     } else {
-        zlmCond <- zlm(formula = as.formula(formulaToUse), 
+        zlmCond <- MAST::zlm(formula = as.formula(formulaToUse), 
                        sca=sca, 
                        ebayes=T, silent=T) 
     }
@@ -136,7 +136,7 @@ RunDGE_MAST_MixedModel <- function(seurat_object,
                                    assay = assay,
                                    sampleId = sampleId)
         
-        sca = SceToSingleCellAssay(as.SingleCellExperiment(seurat_object[rownames(pbFC)[pbFC$pct.1 >= minProportionOfCell |
+        sca = MAST::SceToSingleCellAssay(as.SingleCellExperiment(seurat_object[rownames(pbFC)[pbFC$pct.1 >= minProportionOfCell |
                                                                                         pbFC$pct.2 >= minProportionOfCell],
                                                                          cells],assay =assay), 
                                    class = "SingleCellAssay",check_sanity=FALSE)
@@ -212,7 +212,7 @@ RunDGE_MAST_GLMModel <- function(seurat_object,
                                    assay = assay,
                                    sampleId = sampleId)
         
-        sca = SceToSingleCellAssay(as.SingleCellExperiment(seurat_object[rownames(pbFC)[pbFC$pct.1 >= minProportionOfCell |
+        sca = MAST::SceToSingleCellAssay(as.SingleCellExperiment(seurat_object[rownames(pbFC)[pbFC$pct.1 >= minProportionOfCell |
                                                                                         pbFC$pct.2 >= minProportionOfCell],
                                                                          cells],assay =assay), 
                                    class = "SingleCellAssay",check_sanity=FALSE)
