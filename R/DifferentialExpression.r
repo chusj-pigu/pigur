@@ -27,7 +27,7 @@ find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOf
     print("")
     # add a column to the data which contains scaled number of genes that are expressed in each cell
     cdr2 <- colSums(assay(sca)>0)
-    colData(sca)[[libSizeVar]] <- scale(cdr2)
+    SingleCellExperiment::colData(sca)[[libSizeVar]] <- scale(cdr2)
 
     # define and fit the model (if mixed or only fixed)
     if (mixed)
@@ -147,9 +147,9 @@ RunDGE_MAST_MixedModel <- function(seurat_object,
         #Set the base group
         label <- relevel(label,ident.2)
     
-        colData(sca)[[sampleId]] <- factor(colData(sca)[[sampleId]])
+        SingleCellExperiment::colData(sca)[[sampleId]] <- factor(SingleCellExperiment::colData(sca)[[sampleId]])
 
-        colData(sca)[[identVar]] <- label
+        SingleCellExperiment::colData(sca)[[identVar]] <- label
         #Our condition of interest (contrast) is on the group variable 
 
         
@@ -223,7 +223,7 @@ RunDGE_MAST_GLMModel <- function(seurat_object,
         #Set the base group
         label <- relevel(label,ident.2)
     
-        colData(sca)[[identVar]] <- label
+        SingleCellExperiment::colData(sca)[[identVar]] <- label
         #Our condition of interest (contrast) is on the group variable 
 
         
