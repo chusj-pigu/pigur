@@ -175,3 +175,75 @@ RunDGE_MAST_MixedModel <- function(seurat_object,
         res$pct.2 <- pbFC[res$gene,"pct.2"]
         return(res)
 }
+
+#' Perform Differential Gene Expression using MAST using a GLM model c The fold changes are however computed using a pseudo-bulk approach (see ComputeFCPseudobulk)
+#' 
+#' @param seurat_object Seurat Object, with the condition of interest setup as "Ident"
+#' @param ident.1 Ident level of the First group.  Fold change is compute as (ident.1/ident.2)
+#' @param ident.2 Ident level of the Second group.  Fold change is compute as (ident.1/ident.2)
+#' @param formula DE Formula to apply
+#' @param sampleId Meta data field name containing the Id of the individual samples.  
+#' @param assay Assay name over which to compute fold changes.
+#' @param identVar Name of the Ident var within the provided formula
+#' @param libSizeVar Variable name representing the number of genes expressed per cells (as used in the formulaToUse)
+#' @param minProportionOfCell Minimum global proportion of the cells expression a given gene.  Genes expressed in less cells than that in one of the 2 groups are not tested for DGE.
+#' @param filterFDRThr Filter output results based on this FDR threshold
+#' @returns A data frame with DGE results.
+#' @export
+RunDGE_MAST_GLMModel <- function(seurat_object,
+                                   ident.1,
+                                   ident.2,
+                                   formula = "~ ngeneson + group",
+                                   sampleId="sampleId",
+                                   assay="RNA",
+                                   identVar = "group",
+                                   librarysize_var = "ngeneson",
+                                   minProportionOfCell = 0.05,
+                                   filterFDRThr=2)
+{
+    
+        cells <- which(Idents(seurat_object) %in% c(ident.1,ident.2))
+        
+        label <- factor(Idents(seurat_object)[cells])
+
+        pbFC <- ComputeFCPseudobulk(seurat_object,
+                                   ident.1,
+                                   ident.2,
+                                   assay = assay,
+                                   sampleId = sampleId)
+        
+        sca = SceToSingleCellAssay(as.SingleCellExperiment(seurat_object[rownames(pbFC)[pbFC$pct.1 >= minProportionOfCell |
+                                                                                        pbFC$pct.2 >= minProportionOfCell],
+                                                                         cells],assay =assay), 
+                                   class = "SingleCellAssay",check_sanity=FALSE)
+ 
+        
+
+        #Set the base group
+        label <- relevel(label,ident.2)
+    
+        colData(sca)[[identVar]] <- label
+        #Our condition of interest (contrast) is on the group variable 
+
+        
+        contrast = paste0(gsub(" ", "_",identVar),ident.1)
+
+
+        #We control for the library size (ngeneson),
+        #First run with the biological replicate as a fixed effect
+        res = find_de_MAST_RE(sca,
+                              formula = formula,
+                              conditionOfInterest = contrast, 
+                              mixed=False,
+                              minProportionOfCell = 0,
+                              libSizeVar=librarysize_var, 
+                              filterFDRThr=filterFDRThr)
+
+        
+
+        colnames(res) <- c('gene','p.value','log2FC','fdr')
+        res$log2FC <- pbFC[res$gene,"avg_log2FC"]
+        res$pct.1 <- pbFC[res$gene,"pct.1"]
+        res$pct.2 <- pbFC[res$gene,"pct.2"]
+        return(res)
+}
