@@ -90,7 +90,7 @@ ComputeFCPseudobulk <- function(seurat_object,
                              group.by = unique(c(sampleId,"ident")))
     #Here, a scale factor representing the mean sequencing depth of all samples is used
     # Using a proper scalefactor is important because of the +1 pseudocount added to fold change computation
-    pb <- NormalizeData(pb, scale.factor = mean(colSums(GetAssayData(pb[[assay]],slot = "counts") )))
+    pb <- NormalizeData(pb, scale.factor = mean(Matrix::colSums(GetAssayData(pb[[assay]],slot = "counts") )))
     Idents(pb) <- "orig.ident"
     fcpb<- FoldChange(pb,ident.1 = ident.1,ident.2 = ident.2)
     fc <- FoldChange(seurat_object,ident.1 = ident.1,ident.2 = ident.2)
