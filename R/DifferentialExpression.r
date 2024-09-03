@@ -1,6 +1,7 @@
 library(MAST)
 library(Seurat)
 library(Matrix)
+library(SingleCellExperiment)
 
 #' Perform Differential Gene Expression using MAST 
 #' Adapted from https://www.sc-best-practices.org/conditions/differential_gene_expression.html#single-cell-specific

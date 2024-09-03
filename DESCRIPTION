@@ -18,6 +18,7 @@ Imports:
     Seurat,
     future,
     openxlsx,
+    SingleCellExperiment,
     BiocParallel,
     MAST,   
     AUCell,
