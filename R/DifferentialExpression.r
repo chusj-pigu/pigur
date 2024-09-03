@@ -99,7 +99,20 @@ ComputeFCPseudobulk <- function(seurat_object,
     return (fcpb)
 
 }
-
+#' Compute Fold Changes  between 2 conditions and multiple samples using a pseudobulk approach.  First, the assay is aggregated by sample and the data is normalized using a scaling factor corresponding to the average library depth of all the samples.  Then the FoldChange is compute over the data slot of the pseudobulk aggregated assay using Seurat standard "FoldChange" function.
+#'
+#' @param seurat_object Seurat Object, with the condition of interest setup as "Ident"
+#' @param ident.1 Ident level of the First group.  Fold change is compute as (ident.1/ident.2)
+#' @param ident.2 Ident level of the Second group.  Fold change is compute as (ident.1/ident.2)
+#' @param assay Assay name over which to compute fold changes.
+#' @param sampleId Meta data field name containing the Id of the individual samples.
+#' @returns A Fold change dataframe, with the assay feature names as rownames.
+#' @examples
+#'\dontrun{
+#' fcdf = ComputeFCPseudobulk(seurat_object,'condition1','condition2',assay='SCT',sampleId='orig.ident')
+#' head(fcdf)
+#' }
+#' @export
 test <- function(seurat_object, 
                                 ident.1,
                                 ident.2,
