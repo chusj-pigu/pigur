@@ -7,7 +7,7 @@ library(SingleCellExperiment)
 #' @importMethodsFrom SummarizedExperiment assay
 #' @importMethodsFrom SummarizedExperiment assayNames
 #' @importMethodsFrom SummarizedExperiment 'assay<-'
-NULL
+
 
 
 
@@ -27,6 +27,7 @@ NULL
 #' @import Seurat
 #' @import Matrix
 #' @import SingleCellExperiment
+#' @import data.table
 #' @export
 find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOfCell = 0.1,libSizeVar="ngeneson", filterFDRThr=0.05,mixed = T){
 
