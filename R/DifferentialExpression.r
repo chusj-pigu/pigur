@@ -260,7 +260,7 @@ RunDGE_MAST_GLMModel <- function(seurat_object,
         res = find_de_MAST_RE(sca,
                               formula = formula,
                               conditionOfInterest = contrast, 
-                              mixed=False,
+                              mixed=FALSE,
                               minProportionOfCell = 0,
                               libSizeVar=librarysize_var, 
                               filterFDRThr=filterFDRThr)
