@@ -100,6 +100,22 @@ ComputeFCPseudobulk <- function(seurat_object,
 
 }
 
+test <- function(seurat_object, 
+                                ident.1,
+                                ident.2,
+                                assay = "RNA",
+                                sampleId = "SampleId"
+                                )
+{
+    
+    pb <- AggregateExpression(seurat_object, 
+                             assays = assay, 
+                             return.seurat = T, 
+                             group.by = unique(c(sampleId,"ident")))
+    print(GetAssayData(pb[[assay]],slot = "counts"))
+
+}
+
 #' Perform Differential Gene Expression using MAST using a mixed effect model containing a random effect for individual biological replicates.  The fold changes are however computed using a pseudo-bulk approach (see ComputeFCPseudobulk)
 #' 
 #' @param seurat_object Seurat Object, with the condition of interest setup as "Ident"
