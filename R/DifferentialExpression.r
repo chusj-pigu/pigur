@@ -14,6 +14,10 @@ library(SingleCellExperiment)
 #' @param filterFDRThr Filter output results based on this FDR threshold
 #' @param mixed Set to true if the formula represents a Mixed model.  Set to false otherwise.
 #' @returns A data frame with DGE results.
+#' @import MAST
+#' @import Seurat
+#' @import Matrix
+#' @import SingleCellExperiment
 #' @export
 find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOfCell = 0.1,libSizeVar="ngeneson", filterFDRThr=0.05,mixed = T){
 
@@ -27,7 +31,7 @@ find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOf
     print("")
     # add a column to the data which contains scaled number of genes that are expressed in each cell
     cdr2 <- colSums(assay(sca)>0)
-    SingleCellExperiment::colData(sca)[[libSizeVar]] <- scale(cdr2)
+    colData(sca)[[libSizeVar]] <- scale(cdr2)
 
     # define and fit the model (if mixed or only fixed)
     if (mixed)
@@ -71,6 +75,10 @@ find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOf
 #' @param assay Assay name over which to compute fold changes.
 #' @param sampleId Meta data field name containing the Id of the individual samples.
 #' @returns A Fold change dataframe, with the assay feature names as rownames.
+#' @import MAST
+#' @import Seurat
+#' @import Matrix
+#' @import SingleCellExperiment
 #' @examples
 #'\dontrun{
 #' fcdf = ComputeFCPseudobulk(seurat_object,'condition1','condition2',assay='SCT',sampleId='orig.ident')
@@ -114,6 +122,10 @@ ComputeFCPseudobulk <- function(seurat_object,
 #' @param minProportionOfCell Minimum global proportion of the cells expression a given gene.  Genes expressed in less cells than that in one of the 2 groups are not tested for DGE.
 #' @param filterFDRThr Filter output results based on this FDR threshold
 #' @returns A data frame with DGE results.
+#' @import MAST
+#' @import Seurat
+#' @import Matrix
+#' @import SingleCellExperiment
 #' @export
 RunDGE_MAST_MixedModel <- function(seurat_object,
                                    ident.1,
@@ -147,9 +159,9 @@ RunDGE_MAST_MixedModel <- function(seurat_object,
         #Set the base group
         label <- relevel(label,ident.2)
     
-        SingleCellExperiment::colData(sca)[[sampleId]] <- factor(SingleCellExperiment::colData(sca)[[sampleId]])
+        colData(sca)[[sampleId]] <- factor(colData(sca)[[sampleId]])
 
-        SingleCellExperiment::colData(sca)[[identVar]] <- label
+        colData(sca)[[identVar]] <- label
         #Our condition of interest (contrast) is on the group variable 
 
         
@@ -190,6 +202,10 @@ RunDGE_MAST_MixedModel <- function(seurat_object,
 #' @param minProportionOfCell Minimum global proportion of the cells expression a given gene.  Genes expressed in less cells than that in one of the 2 groups are not tested for DGE.
 #' @param filterFDRThr Filter output results based on this FDR threshold
 #' @returns A data frame with DGE results.
+#' @import MAST
+#' @import Seurat
+#' @import Matrix
+#' @import SingleCellExperiment
 #' @export
 RunDGE_MAST_GLMModel <- function(seurat_object,
                                    ident.1,
@@ -223,7 +239,7 @@ RunDGE_MAST_GLMModel <- function(seurat_object,
         #Set the base group
         label <- relevel(label,ident.2)
     
-        SingleCellExperiment::colData(sca)[[identVar]] <- label
+       colData(sca)[[identVar]] <- label
         #Our condition of interest (contrast) is on the group variable 
 
         
