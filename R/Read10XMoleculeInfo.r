@@ -52,7 +52,7 @@ Read10XMoleculeInfo <- function(moleculeFile="molecule_info.h5",
         filt = filt & rhdf5::h5read(moleculeFile, "barcode_idx") %in% passFilterBarcodes
     } else {
         #keep all barcodes
-        passFilterBarcodes = rep(TRUE,NROW(barcodes))
+        passFilterBarcodes = barcode_info[1,]
     }
     #Filter on Exon UMI
     filt_exon = rhdf5::h5read(moleculeFile,"umi_type") == 1
