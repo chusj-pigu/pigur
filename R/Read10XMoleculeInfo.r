@@ -50,10 +50,11 @@ Read10XMoleculeInfo <- function(moleculeFile="molecule_info.h5",
     if(filtered)
     {
         filt = filt & rhdf5::h5read(moleculeFile, "barcode_idx") %in% passFilterBarcodes
-    } else {
+    } 
+    #else {
         #keep all barcodes
-        passFilterBarcodes = rhdf5::h5read(moleculeFile, "barcode_idx")
-    }
+    #    passFilterBarcodes = unique(rhdf5::h5read(moleculeFile, "barcode_idx"))
+    #}
     #Filter on Exon UMI
     filt_exon = rhdf5::h5read(moleculeFile,"umi_type") == 1
 
@@ -77,9 +78,17 @@ Read10XMoleculeInfo <- function(moleculeFile="molecule_info.h5",
                 giveCsparse = TRUE)
 
     #Filter sparse matrix to only the features to keep and the barcodes to keep.
-    countExons <- countExons[featuresToKeep,passFilterBarcodes+1]
-    countIntrons <- countIntrons[featuresToKeep,passFilterBarcodes+1]
-    barcodesNames <-barcodes[passFilterBarcodes+1]
+    if(filtered)
+    {    
+        countExons <- countExons[featuresToKeep,passFilterBarcodes+1]
+        countIntrons <- countIntrons[featuresToKeep,passFilterBarcodes+1]
+        barcodesNames <-barcodes[passFilterBarcodes+1]
+    } else {
+        countExons <- countExons[featuresToKeep,]
+        countIntrons <- countIntrons[featuresToKeep,]
+        barcodesNames <-barcodes
+
+    }
     if(nchar(barcodesNames[1]) == 16)
     {
         barcodesNames <- paste0(barcodesNames,"-1")
