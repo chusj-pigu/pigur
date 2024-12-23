@@ -72,7 +72,7 @@ find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOf
     result[,FDR:=p.adjust(`Pr(>Chisq)`, 'fdr')]
     result = result[result$FDR<filterFDRThr,, drop=F]
 
-    result <- stats::na.omit(as.data.frame(result))
+    #result <- stats::na.omit(as.data.frame(result))
     return(result)
 }
 
