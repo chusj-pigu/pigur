@@ -26,4 +26,5 @@ Imports:
     qvalue,
     DropletUtils,
     dplyr,
-    rols
+    rols,
+    SeuratDisk

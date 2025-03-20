@@ -2,6 +2,7 @@ library(openxlsx)
 library(Seurat)
 library(dplyr)
 library(rols)
+library(SeuratDisk)
 
 #' Export a list of tables to 1 excel file
 #'
@@ -162,7 +163,7 @@ ExportMetadataSingleCellPortal <- function(seurat_object,
 #' Export cell clustering to a format accepted by the Broad single cell Portal
 #'
 #' @param seurat_object Seurat Object,
-#' @param file meta data file name
+#' @param file clustering file name
 #' @param reduction the data reduction name to export (UMAP by default)
 #' @param extraColumns Extra Columns to export alongside the UMAP
 #' @returns nothing
@@ -170,7 +171,7 @@ ExportMetadataSingleCellPortal <- function(seurat_object,
 #'\dontrun{
 #'  ExportClusteringSingleCellPortal(seurat_object = seurat_object,
 #'                                      file = "./metadata.txt",
-#'                                      reduction = "UMAP")
+#'                                      reduction = "umap")
 #' }
 #' @export
 ExportClusteringSingleCellPortal <- function(seurat_object,
@@ -217,7 +218,7 @@ ExportClusteringSingleCellPortal <- function(seurat_object,
 #' Export coordinate label files to a format accepted by the Broad single cell Portal
 #'
 #' @param seurat_object Seurat Object,
-#' @param file meta data file name
+#' @param file coordinate label file name
 #' @param reduction The reduction to base the coordinate on
 #' @param label The Group label column to use
 #' @returns nothing
@@ -232,7 +233,7 @@ ExportClusteringSingleCellPortal <- function(seurat_object,
 #' @export
 ExportLabelCoordinatesSingleCellPortal <- function(seurat_object,
                                   file = "./labels.txt",
-                                  reduction = "UMAP",
+                                  reduction = "umap",
                                   label = "seurat_clusters")
 {
 
@@ -357,4 +358,53 @@ AnnotateOntologiesSingleCellPortal <- function(seurat_object,
     seurat_object$library_preparation_protocol  = protocol
     seurat_object$library_preparation_protocol__ontology_label = termLabel(Term("efo", gsub("_",":",protocol,fixed=T))) 
     return(seurat_object)
+}
+
+
+#' Export a seurat object to H5AD
+#'
+#' @param seurat_object Seurat Object,
+#' @param file h5ad file name
+#' @param assay The assay to export
+#' @param dimreducs The list of data reduction to export
+#' @returns nothing
+#' @examples
+#'\dontrun{
+#'  ExportToH5AD(seurat_object = seurat_object,
+#'                                      file = "my_data.h5ad",
+#'                                      reduction = c("umap")
+#' )
+#' }
+#' @export
+ExportToH5AD <- function(seurat_object,
+                        file="adata.h5ad",
+                        assay="RNA",
+                        dimreducs = Reductions(seurat_object)
+             )
+{
+
+    DefaultAssay(seurat_object) <- assay
+
+    #Get rid of other assays (KEEP JUST RNA), as well as some dimreducs and graphs.
+    reduced_obj <- DietSeurat(
+    seurat_object,
+    features = NULL,  # Or a list of genes to keep
+    assays = c(assay),  # Or SCT, but as discussed, I prefer to work with RNA assay.
+    dimreducs = dimreducs, # Or a list of dim reduced (UMAP/PCA) to keep
+    graphs = NULL,  #  I usually don't bother keeping the graphs
+    misc = TRUE,  # Not sure what this is.
+    )
+
+    #Convert RNA Assay to Seurat AssayV3 (if it was V4/V5)
+    reduced_obj[[assay]] <- as(object = reduced_obj[[assay]], Class = "Assay")
+    #Remove scale Data  layer
+    reduced_obj@assays$RNA$scale.data <- NULL
+
+
+    # Where only want the RNA assay with counts and data slots
+    h5file = gsub("h5ad","h5Seurat",file)
+    #Make conversion
+    SaveH5Seurat(reduced_obj, filename = h5file,overwrite=T)
+    Convert(h5file, dest = "h5ad",overwrite=T)
+    unlink(h5file)
 }

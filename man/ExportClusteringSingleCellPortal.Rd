@@ -14,7 +14,7 @@ ExportClusteringSingleCellPortal(
 \arguments{
 \item{seurat_object}{Seurat Object,}
 
-\item{file}{meta data file name}
+\item{file}{clustering file name}
 
 \item{reduction}{the data reduction name to export (UMAP by default)}
 
@@ -30,6 +30,6 @@ Export cell clustering to a format accepted by the Broad single cell Portal
 \dontrun{
  ExportClusteringSingleCellPortal(seurat_object = seurat_object,
                                      file = "./metadata.txt",
-                                     reduction = "UMAP")
+                                     reduction = "umap")
 }
 }

@@ -7,14 +7,14 @@
 ExportLabelCoordinatesSingleCellPortal(
   seurat_object,
   file = "./labels.txt",
-  reduction = "UMAP",
+  reduction = "umap",
   label = "seurat_clusters"
 )
 }
 \arguments{
 \item{seurat_object}{Seurat Object,}
 
-\item{file}{meta data file name}
+\item{file}{coordinate label file name}
 
 \item{reduction}{The reduction to base the coordinate on}
 
