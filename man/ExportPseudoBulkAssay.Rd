@@ -37,6 +37,6 @@ Export a pseudobulk assay to an Excel workbook.  2 sheets will be created, one w
 pb_seurat <- ExportPseudoBulkAssay(seurat_object = seurat_object,
                                      assay = "RNA",
                                      group.by = c("SampleId", "Condition"),
-                                     file = "./path/to/export/file.xlsx"
+                                     file = "./path/to/export/file.xlsx")
 }
 }

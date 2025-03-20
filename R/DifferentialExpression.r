@@ -4,9 +4,7 @@ library(Matrix)
 library(SingleCellExperiment)
 
 
-#' @importMethodsFrom SummarizedExperiment assay
-#' @importMethodsFrom SummarizedExperiment assayNames
-#' @importMethodsFrom SummarizedExperiment 'assay<-'
+
 
 
 
@@ -28,6 +26,9 @@ library(SingleCellExperiment)
 #' @import Matrix
 #' @import SingleCellExperiment
 #' @import data.table
+#' @importMethodsFrom SummarizedExperiment assay
+#' @importMethodsFrom SummarizedExperiment assayNames
+#' @importMethodsFrom SummarizedExperiment 'assay<-'
 #' @export
 find_de_MAST_RE <- function(sca,formulaToUse,conditionOfInterest,minProportionOfCell = 0.1,libSizeVar="ngeneson", filterFDRThr=0.05,mixed = T){
 
